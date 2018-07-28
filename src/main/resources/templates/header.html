@@ -1,0 +1,19 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>OctoManager</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" th:href="@{/main.css}">
+</head>
+<body>
+<div class="container">
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+            <a th:classappend="${url} == '/printer/add' ? active : none" class="nav-link" href="/printer/add">Add printer</a>
+        </li>
+        <li class="nav-item">
+            <a th:classappend="${url} == '/printer/list' ? active : none" class="nav-link" href="/printer/list">List printers</a>
+        </li>
+    </ul>
+</div>
