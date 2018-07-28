@@ -22,6 +22,7 @@ class Printer {
     var server: String? = null
     var printingStatus: Int = 0
     var connectedStatus: Int = 0
+    var serialConnectionStatus: String = "?"
 
 
     data class Version(var api: String = "",
@@ -29,6 +30,12 @@ class Printer {
 
         class Deserializer : ResponseDeserializable<Version> {
             override fun deserialize(content: String) = Gson().fromJson(content, Version::class.java)
+        }
+    }
+
+    data class SerialConnectivity(var current: com.google.gson.JsonObject) {
+        class Deserializer : ResponseDeserializable<SerialConnectivity> {
+            override fun deserialize(content: String) = Gson().fromJson(content, SerialConnectivity::class.java)
         }
     }
 
@@ -61,6 +68,29 @@ class Printer {
                     updater.set("printingStatus", 2)
                 }
             }
+            OctmgrApplication.pultusORM.update(Printer(), updater.build())
+        }
+    }
+
+    fun updateSerialConnection() {
+        val url: String = "http://" + this.ip + "/api/connection" + "?apikey=" + this.apiKey
+        url.httpGet().timeout(5000).responseObject(Printer.SerialConnectivity.Deserializer()) { request, response, result ->
+            val (serial, err) = result
+
+            val condition: PultusORMCondition = PultusORMCondition.Builder()
+                    .eq("printerId", this.printerId)
+                    .build()
+
+            val updater: PultusORMUpdater.Builder = PultusORMUpdater.Builder()
+                    .condition(condition)
+
+            if (err != null) {
+                print(err.message)
+                updater.set("serialConnectionStatus", "?")
+            } else if (serial != null) {
+                updater.set("serialConnectionStatus", serial.current.get("state").asString)
+            }
+
             OctmgrApplication.pultusORM.update(Printer(), updater.build())
         }
     }

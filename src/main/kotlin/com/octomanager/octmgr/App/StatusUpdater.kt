@@ -14,11 +14,11 @@ class StatusUpdater {
         val printers: MutableList<Any> = OctmgrApplication.pultusORM.find(Printer())
 
         for (printer in printers) run {
-            val castedPrinter = printer as Printer
-            println(castedPrinter.name + " " + castedPrinter.ip + " " + castedPrinter.connectedStatus)
-            println("------------------------------ INFO ------------------------------")
+            printer as Printer
+
             printer.updateVersionAndConnectivity()
             printer.updatePrintingStatus()
+            printer.updateSerialConnection()
         }
     }
 }

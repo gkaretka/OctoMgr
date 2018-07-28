@@ -14,6 +14,7 @@
         <tr>
             <th>Name</th>
             <th>Connected status</th>
+            <th>Printer Serial connected</th>
             <th>Printing status</th>
             <th>Edit</th>
             <th>Delete</th>
@@ -27,6 +28,11 @@
                 <div style="text-align: center;">
                     <span th:classappend="${printer.connectedStatus} ? badge-success : badge-danger"
                           class="badge badge-pill">&nbsp;</span>
+                </div>
+            </td>
+            <td>
+                <div style="text-align: center;">
+                    <p th:text="${printer.serialConnectionStatus}"></p>
                 </div>
             </td>
             <td>

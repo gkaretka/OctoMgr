@@ -31,7 +31,9 @@ class PrinterController {
         printer.printingStatus = 0
         printer.connectedStatus = 0
 
-        print(printer.name + " added")
+        printer.updateVersionAndConnectivity()
+        printer.updateSerialConnection()
+        printer.updatePrintingStatus()
 
         OctmgrApplication.pultusORM.save(printer)
 
@@ -110,10 +112,6 @@ class PrinterController {
 
         val printers: MutableList<Printer> = OctmgrApplication.pultusORM.find(Printer()) as MutableList<Printer>
         model.addAttribute("printers", printers)
-
-        for (printer in printers) {
-            print(printer.name + " " + printer.connectedStatus)
-        }
 
         return "list_printer"
     }
