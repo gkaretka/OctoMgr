@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 @Component
 class StatusUpdater {
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 5000)
     fun updatePrinterStatus() {
         val printers: MutableList<Any> = OctmgrApplication.pultusORM.find(Printer())
 

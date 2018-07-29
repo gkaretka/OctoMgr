@@ -1,5 +1,7 @@
 package com.octomanager.octmgr.Views
 
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.octomanager.octmgr.Objects.Printer
 import com.octomanager.octmgr.OctmgrApplication
 import ninja.sakib.pultusorm.core.PultusORMCondition
@@ -111,6 +113,16 @@ class PrinterController {
         model.addAttribute("url", "/printer/list")
 
         val printers: MutableList<Printer> = OctmgrApplication.pultusORM.find(Printer()) as MutableList<Printer>
+        for ((count, printer) in printers.withIndex()) {
+            val jsonParser = JsonParser()
+            val jsonTemp = jsonParser.parse(printer.temperature).asJsonObject
+
+            printers[count].actualNozzleTemperature = (jsonTemp.get("tool0").asJsonObject).get("actual").asFloat
+            printers[count].targetNozzleTemperature = (jsonTemp.get("tool0").asJsonObject).get("target").asFloat
+            printers[count].actualBedTemperature = (jsonTemp.get("bed").asJsonObject).get("actual").asFloat
+            printers[count].targetBedTemperature = (jsonTemp.get("bed").asJsonObject).get("target").asFloat
+        }
+
         model.addAttribute("printers", printers)
 
         return "list_printer"

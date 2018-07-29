@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.octomanager.octmgr.OctmgrApplication
 import ninja.sakib.pultusorm.annotations.AutoIncrement
+import ninja.sakib.pultusorm.annotations.Ignore
 import ninja.sakib.pultusorm.annotations.PrimaryKey
 import ninja.sakib.pultusorm.core.PultusORMCondition
 import ninja.sakib.pultusorm.core.PultusORMUpdater
@@ -24,6 +25,15 @@ class Printer {
     var connectedStatus: Int = 0
     var serialConnectionStatus: String = "?"
     var temperature: String = "?/?"
+
+    @Ignore
+    var actualNozzleTemperature: Float? = null
+    @Ignore
+    var actualBedTemperature: Float? = null
+    @Ignore
+    var targetNozzleTemperature: Float? = null
+    @Ignore
+    var targetBedTemperature: Float? = null
 
 
     data class Version(var api: String = "",
