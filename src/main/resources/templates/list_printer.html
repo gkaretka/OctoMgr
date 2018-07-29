@@ -25,21 +25,37 @@
                 <span data-th-text="${printer.name}"></span>
             </td>
             <td>
-                <div style="text-align: center;">
+                <div class="mid-alignment">
                     <span th:classappend="${printer.connectedStatus} ? badge-success : badge-danger"
                           class="badge badge-pill">&nbsp;</span>
                 </div>
             </td>
             <td>
-                <div style="text-align: center;">
+                <div class="mid-alignment">
                     <p th:text="${printer.serialConnectionStatus}"></p>
                 </div>
             </td>
             <td>
-                <div style="text-align: center;" th:switch="${printer.printingStatus}">
-                    <span th:case="0" class="badge-danger badge badge-pill center-pill">&nbsp;</span>
-                    <span th:case="1" class="badge-success badge badge-pill center-pill">&nbsp;</span>
-                    <span th:case="2" class="badge-warning badge badge-pill center-pill">&nbsp;</span>
+                <div th:switch="${printer.printingStatus}">
+                    <span th:case="0"
+                          class="badge-danger badge badge-pill center-pill status-ball">&nbsp;</span>
+                    <span th:case="1"
+                          class="badge-success badge badge-pill center-pill status-ball">&nbsp;</span>
+                    <span th:case="2"
+                          class="badge-warning badge badge-pill center-pill status-ball">&nbsp;</span>
+
+                    <div class="mid-alignment">
+                        <div class="nozzle-temp-span">
+                            <span class="temp-menu" th:id="'actual_ntemp-' + ${printer.printerId}">?</span>
+                            /
+                            <span class="temp-menu" th:id="'target_ntemp-' + ${printer.printerId}">?</span>
+                        </div>
+                        <div class="bed-temp-span">
+                            <span class="temp-menu" th:id="'actual_btemp-' + ${printer.printerId}">?</span>
+                            /
+                            <span class="temp-menu" th:id="'target_btemp-' + ${printer.printerId}">?</span>
+                        </div>
+                    </div>
                 </div>
             </td>
             <td>
@@ -60,5 +76,44 @@
         </tr>
     </table>
 </div>
+<script>
+    function updateTemperature() {
+        var printerSpans = document.getElementsByClassName("temp-menu");
+
+        for (var i = 0; i < printerSpans.length; i++) {
+            var printerId = "";
+
+            var idNumber = false;
+            for (var j = 0; j < printerSpans[i].id.length; j++) {
+                if (idNumber)
+                    printerId += printerSpans[i].id.charAt(j);
+
+                if (printerSpans[i].id.charAt(j) === '-')
+                    idNumber = true;
+            }
+
+            setValues(printerId)
+        }
+    }
+
+    function setValues(printerId) {
+        $.getJSON("/printer/api/temperature/" + printerId, function (data) {
+            $.each(data, function (key, val) {
+                if (key === "bed") {
+                    $("#actual_btemp-" + printerId).text(val.actual);
+                    $("#target_btemp-" + printerId).text(val.target);
+                } else if (key === "tool0") {
+                    $("#actual_ntemp-" + printerId).text(val.actual);
+                    $("#target_ntemp-" + printerId).text(val.target);
+                }
+            });
+        });
+    }
+
+    setInterval(function () {
+        updateTemperature();
+    }, 3000)
+
+</script>
 <div th:insert="footer"></div>
 </html>

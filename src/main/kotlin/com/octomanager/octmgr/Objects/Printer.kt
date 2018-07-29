@@ -23,6 +23,7 @@ class Printer {
     var printingStatus: Int = 0
     var connectedStatus: Int = 0
     var serialConnectionStatus: String = "?"
+    var temperature: String = "?/?"
 
 
     data class Version(var api: String = "",
@@ -39,7 +40,8 @@ class Printer {
         }
     }
 
-    data class PrintingStatus(var state: com.google.gson.JsonObject) {
+    data class PrintingStatus(var state: com.google.gson.JsonObject,
+                              var temperature: com.google.gson.JsonObject) {
         class Deserializer : ResponseDeserializable<PrintingStatus> {
             override fun deserialize(content: String) = Gson().fromJson(content, PrintingStatus::class.java)
         }
@@ -58,9 +60,12 @@ class Printer {
                     .condition(condition)
 
             if (err != null) {
-                print(err.message)
+                println(err.message)
                 updater.set("printingStatus", 0)
             } else if (printingStatus != null) {
+                val temperature: JsonObject = printingStatus.temperature.asJsonObject
+                updater.set("temperature", temperature.toString())
+
                 val flags: JsonObject = printingStatus.state.get("flags").asJsonObject
                 if (flags.get("printing").asBoolean) {
                     updater.set("printingStatus", 1)
@@ -85,7 +90,7 @@ class Printer {
                     .condition(condition)
 
             if (err != null) {
-                print(err.message)
+                println(err.message)
                 updater.set("serialConnectionStatus", "?")
             } else if (serial != null) {
                 updater.set("serialConnectionStatus", serial.current.get("state").asString)
@@ -108,7 +113,7 @@ class Printer {
                     .condition(condition)
 
             if (err != null) {
-                print(err.message)
+                println(err.message)
                 updater.set("version", "not loaded")
                 updater.set("server", "not loaded")
                 updater.set("connectedStatus", 0)

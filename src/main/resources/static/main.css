@@ -1,3 +1,12 @@
 .icon:hover {
     -webkit-filter: invert(45%);
 }
+
+.status-ball {
+    vertical-align: middle;
+}
+
+.mid-alignment {
+    vertical-align: middle;
+    display: inline-block;
+}
