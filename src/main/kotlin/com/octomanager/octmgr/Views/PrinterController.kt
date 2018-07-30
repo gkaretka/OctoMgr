@@ -117,10 +117,10 @@ class PrinterController {
             val jsonParser = JsonParser()
             val jsonTemp = jsonParser.parse(printer.temperature).asJsonObject
 
-            printers[count].actualNozzleTemperature = (jsonTemp.get("tool0").asJsonObject).get("actual").asFloat
-            printers[count].targetNozzleTemperature = (jsonTemp.get("tool0").asJsonObject).get("target").asFloat
-            printers[count].actualBedTemperature = (jsonTemp.get("bed").asJsonObject).get("actual").asFloat
-            printers[count].targetBedTemperature = (jsonTemp.get("bed").asJsonObject).get("target").asFloat
+            printers[count].actualNozzleTemperature = (jsonTemp.get("tool0").asJsonObject).get("actual").asString
+            printers[count].targetNozzleTemperature = (jsonTemp.get("tool0").asJsonObject).get("target").asString
+            printers[count].actualBedTemperature = (jsonTemp.get("bed").asJsonObject).get("actual").asString
+            printers[count].targetBedTemperature = (jsonTemp.get("bed").asJsonObject).get("target").asString
         }
 
         model.addAttribute("printers", printers)

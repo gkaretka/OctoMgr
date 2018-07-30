@@ -4,6 +4,7 @@ import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.github.kittinunf.fuel.httpGet
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.octomanager.octmgr.OctmgrApplication
 import ninja.sakib.pultusorm.annotations.AutoIncrement
 import ninja.sakib.pultusorm.annotations.Ignore
@@ -27,13 +28,13 @@ class Printer {
     var temperature: String = "?/?"
 
     @Ignore
-    var actualNozzleTemperature: Float? = null
+    var actualNozzleTemperature: String? = null
     @Ignore
-    var actualBedTemperature: Float? = null
+    var actualBedTemperature: String? = null
     @Ignore
-    var targetNozzleTemperature: Float? = null
+    var targetNozzleTemperature: String? = null
     @Ignore
-    var targetBedTemperature: Float? = null
+    var targetBedTemperature: String? = null
 
 
     data class Version(var api: String = "",
@@ -101,6 +102,8 @@ class Printer {
 
             if (err != null) {
                 println(err.message)
+                setOfflineValues()
+                updater.set("temperature", temperature)
                 updater.set("serialConnectionStatus", "?")
             } else if (serial != null) {
                 updater.set("serialConnectionStatus", serial.current.get("state").asString)
@@ -124,9 +127,11 @@ class Printer {
 
             if (err != null) {
                 println(err.message)
+                setOfflineValues()
                 updater.set("version", "not loaded")
                 updater.set("server", "not loaded")
                 updater.set("connectedStatus", 0)
+                updater.set("temperature", temperature)
             } else if (version != null) {
                 updater.set("version", version.api)
                 updater.set("server", version.server)
@@ -135,5 +140,16 @@ class Printer {
 
             OctmgrApplication.pultusORM.update(Printer(), updater.build())
         }
+    }
+
+    private fun setOfflineValues() {
+        val jsonParser = JsonParser()
+        val tempTemperature = jsonParser.parse(this.temperature) as JsonObject
+        tempTemperature.get("tool0").asJsonObject.addProperty("actual", "?")
+        tempTemperature.get("tool0").asJsonObject.addProperty("target", "?")
+        tempTemperature.get("bed").asJsonObject.addProperty("actual", "?")
+        tempTemperature.get("bed").asJsonObject.addProperty("target", "?")
+
+        temperature = tempTemperature.toString()
     }
 }
